@@ -1,8 +1,10 @@
-package com.example.brittlepins;
+package com.example.brittlepins.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.brittlepins.R;
 
 public class MainActivity extends AppCompatActivity {
 
