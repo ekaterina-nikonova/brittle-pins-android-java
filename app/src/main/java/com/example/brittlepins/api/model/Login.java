@@ -1,11 +1,11 @@
 package com.example.brittlepins.api.model;
 
 public class Login {
-    private String mUser;
-    private String mPassword;
+    private String email;
+    private String password;
 
-    public Login(String user, String password) {
-        mUser = user;
-        mPassword = password;
+    public Login(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 }

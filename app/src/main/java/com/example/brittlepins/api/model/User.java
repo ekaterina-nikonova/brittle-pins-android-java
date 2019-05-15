@@ -5,6 +5,7 @@ public class User {
     private String mEmail;
     private String mUsername;
     private String mToken;
+    private String csrf;
 
     public String getId() {
         return mID;
@@ -36,5 +37,9 @@ public class User {
 
     public void setToken(String token) {
         mToken = token;
+    }
+
+    public String getCSRF() {
+        return this.csrf;
     }
 }

@@ -3,6 +3,8 @@ package com.example.brittlepins.api.service;
 import com.example.brittlepins.api.model.Login;
 import com.example.brittlepins.api.model.User;
 
+import java.util.HashMap;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -15,6 +17,12 @@ public interface UserClient {
     Call<User> login(@Body Login login);
 
     @GET("boards")
-    Call<ResponseBody> getBoards(@Header("X-CSRF-TOKEN") String authToken);
+    //Call<ResponseBody> getBoards(@Header("X-CSRF-TOKEN") String authToken);
+    Call<ResponseBody> getBoards();
 
+    @POST("boards")
+    Call<ResponseBody> createBoard(
+            @Body HashMap<String, HashMap<String, String>> board,
+            @Header("X-CSRF-TOKEN") String authToken
+    );
 }
