@@ -54,16 +54,17 @@ public class LoginActivity extends AppCompatActivity {
                     showToast("Successfully logged in");
 
                     String token = response.body().getCSRF();
-                    MainActivity.sharedPreferences.edit().putString("csrf", token).apply();
+                    MainActivity.cookiePreferences.edit().putString("csrf", token).apply();
                     showToast(token);
 
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                 } else {
-                    Response<User> res = response;
                     if (response.raw().code() == 401) {
+                        AuthServices.resetApp();
                         showToast("Invalid username or password");
                     } else {
+                        AuthServices.resetApp();
                         showToast("Something went wrong when trying to log in.");
                         Log.e("Log in response", response.message());
                     }
@@ -72,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
+                AuthServices.resetApp();
                 showToast("Could not log in.");
                 Log.e("Log in failure", t.getMessage());
                 t.printStackTrace();

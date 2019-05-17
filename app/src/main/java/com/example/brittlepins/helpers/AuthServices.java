@@ -16,24 +16,32 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AuthServices {
-    public static ClearableCookieJar jar = new PersistentCookieJar(
-            new SetCookieCache(),
-            new SharedPrefsCookiePersistor(MainActivity.sharedPreferences)
-    );
+    private static ClearableCookieJar jar;
 
     public static UserClient userClient = buildClient();
 
     public static boolean loggedIn() {
-        SharedPreferences prefs = MainActivity.sharedPreferences;
-        String url = prefs.getString("host", "") + "/api/v1|jwt_access";
+        SharedPreferences prefs = MainActivity.cookiePreferences;
+        String url = MainActivity.sharedPreferences.getString("host", "")
+                + "/api/v1|jwt_access";
+
         Boolean cookieInPrefs = ! prefs.getString(url, "").isEmpty();
         Boolean csrfInPrefs = ! prefs.getString("csrf", "").isEmpty();
         return cookieInPrefs && csrfInPrefs;
     }
 
+    public static void resetApp() {
+        jar.clear();
+    }
+
     private
 
     static UserClient buildClient() {
+        jar  = new PersistentCookieJar(
+                new SetCookieCache(),
+                new SharedPrefsCookiePersistor(MainActivity.cookiePreferences)
+        );
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(jar)
                 .build();

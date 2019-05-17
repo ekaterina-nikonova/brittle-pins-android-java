@@ -18,28 +18,27 @@ import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.util.HashMap;
 
-import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
     public static SharedPreferences sharedPreferences;
+    public static SharedPreferences cookiePreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("shared", MODE_PRIVATE);
+        cookiePreferences = getSharedPreferences("cookies", MODE_PRIVATE);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         if (!AuthServices.loggedIn()) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void logOut(View view) {
-        sharedPreferences.edit().clear().apply();
+        AuthServices.resetApp();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void createBoard(View view) {
         try {
-            String authToken = sharedPreferences.getString("csrf", "");
+            String authToken = cookiePreferences.getString("csrf", "");
 
             HashMap<String, HashMap<String, String>> board = new HashMap<>();
             HashMap<String, String> boardData = new HashMap<>();
