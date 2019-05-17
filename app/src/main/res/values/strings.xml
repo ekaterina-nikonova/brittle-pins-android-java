@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Brittle Pins</string>
+
+    <string name="login_username_or_email_prompt">Username or email</string>
+    <string name="login_password_prompt">Password</string>
+    <string name="login_button_label">Log in</string>
+    <string name="logout_menu_item_label">Log out</string>
+    <string name="login_username_autofill_hint">username</string>
+    <string name="login_password_autofill_hint">password</string>
 </resources>
