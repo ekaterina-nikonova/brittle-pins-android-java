@@ -42,8 +42,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void logIn(View view) {
-        String username = mUsernameEditText.getText().toString();
-        String password = mPasswordEditText.getText().toString();
+        String username = mUsernameEditText.getText().toString().trim();
+        String password = mPasswordEditText.getText().toString().trim();
         Login login = new Login(username, password);
         Call<User> call = AuthServices.userClient.login(login);
 
@@ -60,8 +60,13 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                 } else {
-                    showToast("Something went wrong, and we failed to log in.");
-                    Log.e("Log in response", response.message());
+                    Response<User> res = response;
+                    if (response.raw().code() == 401) {
+                        showToast("Invalid username or password");
+                    } else {
+                        showToast("Something went wrong when trying to log in.");
+                        Log.e("Log in response", response.message());
+                    }
                 }
             }
 
