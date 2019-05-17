@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.brittlepins.BuildConfig;
@@ -28,18 +29,22 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
-    public static SharedPreferences sharedPreferences;
+    private EditText mUsernameEditText;
+    private EditText mPasswordEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        mUsernameEditText = findViewById(R.id.usernameEditText);
+        mPasswordEditText = findViewById(R.id.passwordEditText);
     }
 
     public void logIn(View view) {
-        Login login = new Login("john@doe.com", "johndoe123");
+        String username = mUsernameEditText.getText().toString();
+        String password = mPasswordEditText.getText().toString();
+        Login login = new Login(username, password);
         Call<User> call = AuthServices.userClient.login(login);
 
         call.enqueue(new Callback<User>() {
@@ -55,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                 } else {
-                    showToast("Wrong response.");
+                    showToast("Something went wrong, and we failed to log in.");
                     Log.e("Log in response", response.message());
                 }
             }
