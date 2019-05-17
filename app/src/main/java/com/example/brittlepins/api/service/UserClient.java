@@ -17,7 +17,6 @@ public interface UserClient {
     Call<User> login(@Body Login login);
 
     @GET("boards")
-    //Call<ResponseBody> getBoards(@Header("X-CSRF-TOKEN") String authToken);
     Call<ResponseBody> getBoards();
 
     @POST("boards")
