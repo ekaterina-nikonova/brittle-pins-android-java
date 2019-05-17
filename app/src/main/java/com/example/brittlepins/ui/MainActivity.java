@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.brittlepins.R;
-import com.example.brittlepins.api.service.UserClient;
 import com.example.brittlepins.helpers.AuthServices;
 import com.google.gson.JsonParseException;
 
@@ -45,10 +47,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void logOut(View view) {
-        AuthServices.resetApp();
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.logOutMenuItem:
+                AuthServices.logOut(this);
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void showBoards(View view) {

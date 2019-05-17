@@ -1,9 +1,12 @@
 package com.example.brittlepins.helpers;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.example.brittlepins.BuildConfig;
 import com.example.brittlepins.api.service.UserClient;
+import com.example.brittlepins.ui.LoginActivity;
 import com.example.brittlepins.ui.MainActivity;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
@@ -32,6 +35,12 @@ public class AuthServices {
 
     public static void resetApp() {
         jar.clear();
+    }
+
+    public static void logOut(Activity activity) {
+        AuthServices.resetApp();
+        Intent intent = new Intent(activity, LoginActivity.class);
+        activity.startActivity(intent);
     }
 
     private
