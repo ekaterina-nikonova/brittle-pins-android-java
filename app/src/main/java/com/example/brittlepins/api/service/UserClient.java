@@ -3,6 +3,7 @@ package com.example.brittlepins.api.service;
 import com.example.brittlepins.api.model.Login;
 import com.example.brittlepins.api.model.Signup;
 import com.example.brittlepins.api.model.User;
+import com.google.gson.JsonArray;
 
 import java.util.HashMap;
 

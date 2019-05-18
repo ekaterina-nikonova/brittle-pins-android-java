@@ -8,10 +8,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.brittlepins.R;
+import com.example.brittlepins.api.model.Board;
 import com.example.brittlepins.helpers.AuthServices;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -19,6 +23,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BoardsActivity extends AppCompatActivity {
+    private ArrayList<Board> mBoards = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +46,12 @@ public class BoardsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    showToast("Boards successfully fetched");
                     try {
-                        Log.i("--*-- Response --*--", response.body().string());
+                        Gson gson = new Gson();
+                        Board[] boards = gson.fromJson(response.body().string(), Board[].class);
+                        mBoards.addAll(Arrays.asList(boards));
                     } catch (IOException ex) {
+                        showToast("Could not load boards.");
                         Log.e("Response to string", ex.getMessage());
                         ex.printStackTrace();
                     }
@@ -55,7 +62,9 @@ public class BoardsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                showToast("Could not connect to server.");
+                Log.e("Fetch boards - fail", t.getMessage());
+                t.printStackTrace();
             }
         });
     }
