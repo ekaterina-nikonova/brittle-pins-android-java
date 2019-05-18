@@ -39,7 +39,8 @@ public class AuthServices {
 
     public static void logOut(Activity activity) {
         AuthServices.resetApp();
-        activity.finish();
+        Intent intent = new Intent(activity, LoginActivity.class);
+        activity.startActivity(intent);
     }
 
     private

@@ -54,6 +54,11 @@ public class LoginActivity extends AppCompatActivity {
         this.finishAffinity();
     }
 
+    public void goToSignup(View view) {
+        Intent intent = new Intent(this, SignupActivity.class);
+        startActivity(intent);
+    }
+
     public void logIn(View view) {
         String username = mUsernameEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();

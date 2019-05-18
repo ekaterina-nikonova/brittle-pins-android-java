@@ -72,6 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
+            android:onClick="goToSignup"
             android:text="@string/signup_button_label"
             android:textColor="#1976D2" />
     </LinearLayout>
