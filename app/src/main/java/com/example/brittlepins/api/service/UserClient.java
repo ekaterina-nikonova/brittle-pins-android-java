@@ -1,6 +1,7 @@
 package com.example.brittlepins.api.service;
 
 import com.example.brittlepins.api.model.Login;
+import com.example.brittlepins.api.model.Signup;
 import com.example.brittlepins.api.model.User;
 
 import java.util.HashMap;
@@ -13,6 +14,9 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface UserClient {
+    @POST("signup")
+    Call<User> signup(@Body Signup signup);
+
     @POST("signin")
     Call<User> login(@Body Login login);
 
