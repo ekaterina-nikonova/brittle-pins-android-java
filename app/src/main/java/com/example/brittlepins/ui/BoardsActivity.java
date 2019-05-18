@@ -60,7 +60,8 @@ public class BoardsActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     try {
                         Gson gson = new Gson();
-                        Board[] boards = gson.fromJson(response.body().string(), Board[].class);
+                        String responseString = response.body().string();
+                        Board[] boards = gson.fromJson(responseString, Board[].class);
                         mBoards.addAll(Arrays.asList(boards));
                         mAdapter.notifyDataSetChanged();
                     } catch (IOException ex) {

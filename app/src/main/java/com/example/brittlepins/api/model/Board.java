@@ -16,4 +16,8 @@ public class Board {
     public String getName() {
         return this.name;
     }
+
+    public String getImageURL() {
+        return this.image;
+    }
 }
