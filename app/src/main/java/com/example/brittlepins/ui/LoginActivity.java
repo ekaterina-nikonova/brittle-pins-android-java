@@ -63,46 +63,6 @@ public class LoginActivity extends AppCompatActivity {
         String username = mUsernameEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
         Login login = new Login(username, password);
-        Call<User> call = AuthServices.userClient.login(login);
-
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful()) {
-                    showToast("Successfully logged in");
-
-                    String token = response.body().getCSRF();
-                    MainActivity.cookiePreferences.edit().putString("csrf", token).apply();
-                    showToast(token);
-
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                } else {
-                    if (response.raw().code() == 401) {
-                        AuthServices.resetApp();
-                        showToast("Invalid username or password");
-                    } else {
-                        AuthServices.resetApp();
-                        showToast("Something went wrong when trying to log in.");
-                        Log.e("Log in response", response.message());
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                AuthServices.resetApp();
-                showToast("Could not log in.");
-                Log.e("Log in failure", t.getMessage());
-                t.printStackTrace();
-            }
-        });
-    }
-
-
-    private
-
-    void showToast(String message) {
-        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+        AuthServices.logIn(this, login);
     }
 }
