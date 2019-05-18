@@ -1,21 +1,19 @@
 package com.example.brittlepins.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.brittlepins.R;
 import com.example.brittlepins.api.model.Board;
+import com.example.brittlepins.helpers.ActivityWithMenu;
 import com.example.brittlepins.helpers.AuthServices;
 import com.example.brittlepins.helpers.BoardsViewAdapter;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BoardsActivity extends AppCompatActivity {
+public class BoardsActivity extends ActivityWithMenu {
     private ArrayList<Board> mBoards = new ArrayList<>();
     private RecyclerView mBoardsContainer;
     private RecyclerView.Adapter mAdapter;

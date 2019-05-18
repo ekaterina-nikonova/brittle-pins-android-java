@@ -1,23 +1,17 @@
 package com.example.brittlepins.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.brittlepins.R;
+import com.example.brittlepins.helpers.ActivityWithMenu;
 import com.example.brittlepins.helpers.AuthServices;
 import com.google.gson.JsonParseException;
 
-
-import java.io.IOException;
 import java.util.HashMap;
 
 import okhttp3.ResponseBody;
@@ -25,7 +19,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ActivityWithMenu {
     public static SharedPreferences sharedPreferences;
     public static SharedPreferences cookiePreferences;
 
@@ -51,25 +45,6 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         this.finishAffinity();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        switch (item.getItemId()) {
-            case R.id.logOutMenuItem:
-                AuthServices.logOut(this);
-                return true;
-            default:
-                return false;
-        }
     }
 
     public void showBoards(View view) {
