@@ -1,6 +1,8 @@
 package com.example.brittlepins.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 import com.example.brittlepins.R;
 import com.example.brittlepins.api.model.Board;
 import com.example.brittlepins.helpers.AuthServices;
+import com.example.brittlepins.helpers.BoardsViewAdapter;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
@@ -24,11 +27,20 @@ import retrofit2.Response;
 
 public class BoardsActivity extends AppCompatActivity {
     private ArrayList<Board> mBoards = new ArrayList<>();
+    private RecyclerView mBoardsContainer;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_boards);
+
+        mBoardsContainer = findViewById(R.id.boardsContainer);
+        mAdapter = new BoardsViewAdapter(mBoards);
+        mBoardsContainer.setAdapter(mAdapter);
+        mManager = new LinearLayoutManager(this);
+        mBoardsContainer.setLayoutManager(mManager);
     }
 
     @Override
@@ -50,6 +62,7 @@ public class BoardsActivity extends AppCompatActivity {
                         Gson gson = new Gson();
                         Board[] boards = gson.fromJson(response.body().string(), Board[].class);
                         mBoards.addAll(Arrays.asList(boards));
+                        mAdapter.notifyDataSetChanged();
                     } catch (IOException ex) {
                         showToast("Could not load boards.");
                         Log.e("Response to string", ex.getMessage());

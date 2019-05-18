@@ -12,4 +12,8 @@ public class Board {
         this.description = description;
         this.image = image;
     }
+
+    public String getName() {
+        return this.name;
+    }
 }
