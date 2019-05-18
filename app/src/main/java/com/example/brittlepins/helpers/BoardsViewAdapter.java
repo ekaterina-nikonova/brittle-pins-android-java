@@ -2,7 +2,9 @@ package com.example.brittlepins.helpers;
 
 import android.content.res.Resources;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,18 +41,31 @@ public class BoardsViewAdapter extends RecyclerView.Adapter<BoardsViewAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Board board = mBoards.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        final Board board = mBoards.get(position);
 
         ImageView boardImageView = holder.card.findViewById(R.id.boardImageView);
         TextView boardName = holder.card.findViewById(R.id.boardName);
+        LinearLayout boardExtras = holder.card.findViewById(R.id.boardCardExtras);
+        TextView boardDescription = holder.card.findViewById(R.id.boardDescriptionTextView);
 
         boardName.setText(board.getName());
+        boardDescription.setText(board.getDescription());
+        boardExtras.setVisibility(board.isExpanded() ? View.VISIBLE : View.GONE);
+
         Picasso.get()
                 .load(board.getImageURL())
                 .placeholder(R.drawable.board_placeholder)
                 .error(R.drawable.error)
                 .into(boardImageView);
+
+        holder.card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                board.toggleExpanded();
+                notifyItemChanged(position);
+            }
+        });
     }
 
     @Override

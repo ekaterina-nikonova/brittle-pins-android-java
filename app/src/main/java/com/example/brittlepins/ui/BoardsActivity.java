@@ -3,6 +3,7 @@ package com.example.brittlepins.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -41,6 +42,8 @@ public class BoardsActivity extends AppCompatActivity {
         mBoardsContainer.setAdapter(mAdapter);
         mManager = new LinearLayoutManager(this);
         mBoardsContainer.setLayoutManager(mManager);
+        // Remove blinks on touch
+        ((SimpleItemAnimator) mBoardsContainer.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 
     @Override
