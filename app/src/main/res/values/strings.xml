@@ -3,8 +3,15 @@
 
     <string name="login_username_or_email_prompt">Username or email</string>
     <string name="login_password_prompt">Password</string>
-    <string name="login_button_label">Log in</string>
+    <string name="login_button_label" translatable="false">Log in</string>
     <string name="logout_menu_item_label">Log out</string>
     <string name="login_username_autofill_hint">username</string>
     <string name="login_password_autofill_hint">password</string>
+    <string name="signup_email_autofill_hint">email</string>
+    <string name="signup_username_prompt">Username</string>
+    <string name="signup_email_prompt">Email</string>
+    <string name="signup_password_prompt">Password</string>
+    <string name="signup_button_label">Sign up</string>
+    <string name="not_registered">Not registered yet?</string>
+    <string name="already_registered">Already registered?</string>
 </resources>
