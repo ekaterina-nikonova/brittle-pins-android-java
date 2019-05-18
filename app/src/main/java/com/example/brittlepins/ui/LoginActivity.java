@@ -41,6 +41,19 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordEditText = findViewById(R.id.passwordEditText);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mUsernameEditText.setText("");
+        mPasswordEditText.setText("");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finishAffinity();
+    }
+
     public void logIn(View view) {
         String username = mUsernameEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
