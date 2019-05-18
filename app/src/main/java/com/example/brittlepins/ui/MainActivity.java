@@ -73,29 +73,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showBoards(View view) {
-        final View v = view;
-        Call<ResponseBody> call = AuthServices.userClient.getBoards();
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    showToast("Boards successfully fetched");
-                    try {
-                        Log.i("--*-- Response --*--", response.body().string());
-                    } catch (IOException ex) {
-                        Log.e("Response to string", ex.getMessage());
-                        ex.printStackTrace();
-                    }
-                } else {
-                    showToast("Could not fetch boards.");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
+        Intent intent = new Intent(this, BoardsActivity.class);
+        startActivity(intent);
     }
 
     public void createBoard(View view) {

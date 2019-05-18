@@ -52,11 +52,8 @@ public class AuthServices {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
-                    showToast(activity,"Successfully logged in");
-
                     String token = response.body().getCSRF();
                     MainActivity.cookiePreferences.edit().putString("csrf", token).apply();
-                    showToast(activity, token);
 
                     Intent intent = new Intent(activity, MainActivity.class);
                     activity.startActivity(intent);
