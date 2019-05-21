@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.brittlepins.R;
 
+import java.util.HashMap;
+
 public class ActivityWithMenu extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -22,6 +24,9 @@ public class ActivityWithMenu extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.logOutMenuItem:
                 AuthServices.logOut(this);
+                return true;
+            case R.id.newBoardMenuItem:
+                BoardActions.create(this, new HashMap<String, String>());
                 return true;
             default:
                 return false;

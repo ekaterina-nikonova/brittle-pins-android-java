@@ -16,4 +16,5 @@
     <string name="already_registered">Already registered?</string>
 
     <string name="boards_action_bar_header">Boards</string>
+    <string name="new_board_menu_item_label">New board</string>
 </resources>
