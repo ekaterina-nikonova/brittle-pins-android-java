@@ -14,4 +14,7 @@
     <string name="signup_button_label">Sign up</string>
     <string name="not_registered">Not registered yet?</string>
     <string name="already_registered">Already registered?</string>
+
+    <string name="boards_action_bar_header">Boards</string>
+    <string name="new_board_menu_item_label">New board</string>
 </resources>
