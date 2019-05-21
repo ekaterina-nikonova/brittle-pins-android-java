@@ -15,6 +15,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
+        android:onClick="showComponents"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,6 +32,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
+        android:onClick="showBoards"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/mainComponentsImageButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,10 +49,12 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
+        android:onClick="showProjects"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainComponentsImageButton"
         app:srcCompat="@drawable/main_project" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

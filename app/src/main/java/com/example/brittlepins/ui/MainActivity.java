@@ -41,4 +41,14 @@ public class MainActivity extends ActivityWithMenu {
         Intent intent = new Intent(this, BoardsActivity.class);
         startActivity(intent);
     }
+
+    public void showComponents(View view) {
+        Intent intent = new Intent(this, ComponentsActivity.class);
+        startActivity(intent);
+    }
+
+    public void showProjects(View view) {
+        Intent intent = new Intent(this, ProjectsActivity.class);
+        startActivity(intent);
+    }
 }
