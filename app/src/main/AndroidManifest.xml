@@ -6,9 +6,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/brittle_low_res_round"
+        android:icon="@drawable/brittle_logo_round"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/brittle_low_res_round"
+        android:roundIcon="@drawable/brittle_logo_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
