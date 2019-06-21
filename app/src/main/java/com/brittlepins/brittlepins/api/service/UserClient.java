@@ -1,8 +1,8 @@
-package com.example.brittlepins.api.service;
+package com.brittlepins.brittlepins.api.service;
 
-import com.example.brittlepins.api.model.Login;
-import com.example.brittlepins.api.model.Signup;
-import com.example.brittlepins.api.model.User;
+import com.brittlepins.brittlepins.api.model.Login;
+import com.brittlepins.brittlepins.api.model.Signup;
+import com.brittlepins.brittlepins.api.model.User;
 
 import java.util.HashMap;
 

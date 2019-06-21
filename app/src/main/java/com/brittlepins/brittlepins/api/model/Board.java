@@ -1,4 +1,4 @@
-package com.example.brittlepins.api.model;
+package com.brittlepins.brittlepins.api.model;
 
 public class Board {
     private String id;

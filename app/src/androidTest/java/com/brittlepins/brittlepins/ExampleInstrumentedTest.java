@@ -1,4 +1,4 @@
-package com.example.brittlepins;
+package com.brittlepins.brittlepins;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.brittlepins", appContext.getPackageName());
+        assertEquals("com.brittlepins.brittlepins", appContext.getPackageName());
     }
 }

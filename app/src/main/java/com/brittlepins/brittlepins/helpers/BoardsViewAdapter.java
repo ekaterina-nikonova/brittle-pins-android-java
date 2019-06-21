@@ -1,8 +1,5 @@
-package com.example.brittlepins.helpers;
+package com.brittlepins.brittlepins.helpers;
 
-import android.content.res.Resources;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +9,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.brittlepins.R;
-import com.example.brittlepins.api.model.Board;
-import com.example.brittlepins.ui.BoardsActivity;
+import com.brittlepins.brittlepins.R;
+import com.brittlepins.brittlepins.api.model.Board;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-
-import okhttp3.HttpUrl;
 
 public class BoardsViewAdapter extends RecyclerView.Adapter<BoardsViewAdapter.ViewHolder> {
     private ArrayList<Board> mBoards;

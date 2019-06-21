@@ -1,32 +1,15 @@
-package com.example.brittlepins.ui;
+package com.brittlepins.brittlepins.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.example.brittlepins.BuildConfig;
-import com.example.brittlepins.R;
-import com.example.brittlepins.api.model.Login;
-import com.example.brittlepins.api.model.User;
-import com.example.brittlepins.api.service.UserClient;
-import com.example.brittlepins.helpers.AuthServices;
-
-import java.io.IOException;
-
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import com.brittlepins.brittlepins.R;
+import com.brittlepins.brittlepins.api.model.Login;
+import com.brittlepins.brittlepins.helpers.AuthServices;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText mUsernameEditText;

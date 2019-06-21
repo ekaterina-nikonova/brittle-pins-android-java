@@ -1,4 +1,4 @@
-package com.example.brittlepins.ui;
+package com.brittlepins.brittlepins.ui;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.brittlepins.R;
-import com.example.brittlepins.api.model.Board;
-import com.example.brittlepins.helpers.ActivityWithMenu;
-import com.example.brittlepins.helpers.AuthServices;
-import com.example.brittlepins.helpers.BoardsViewAdapter;
+import com.brittlepins.brittlepins.R;
+import com.brittlepins.brittlepins.api.model.Board;
+import com.brittlepins.brittlepins.helpers.ActivityWithMenu;
+import com.brittlepins.brittlepins.helpers.AuthServices;
+import com.brittlepins.brittlepins.helpers.BoardsViewAdapter;
 import com.google.gson.Gson;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.example.brittlepins.helpers;
+package com.brittlepins.brittlepins.helpers;
 
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -6,7 +6,7 @@ import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.brittlepins.R;
+import com.brittlepins.brittlepins.R;
 
 import java.util.HashMap;
 

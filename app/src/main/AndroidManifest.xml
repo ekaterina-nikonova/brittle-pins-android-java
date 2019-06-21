@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.brittlepins">
+    package="com.brittlepins.brittlepins">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,12 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.ProjectsActivity"></activity>
-        <activity android:name=".ui.ComponentsActivity" />
-        <activity android:name=".ui.BoardsActivity" />
-        <activity android:name=".ui.SignupActivity" />
-        <activity android:name=".ui.LoginActivity" />
-        <activity android:name=".ui.MainActivity">
+        <activity android:name="com.brittlepins.brittlepins.ui.ProjectsActivity"></activity>
+        <activity android:name="com.brittlepins.brittlepins.ui.ComponentsActivity" />
+        <activity android:name="com.brittlepins.brittlepins.ui.BoardsActivity" />
+        <activity android:name="com.brittlepins.brittlepins.ui.SignupActivity" />
+        <activity android:name="com.brittlepins.brittlepins.ui.LoginActivity" />
+        <activity android:name="com.brittlepins.brittlepins.ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

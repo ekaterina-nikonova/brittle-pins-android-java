@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.example.brittlepins"
+        applicationId 'com.brittlepins.brittlepins'
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 1
@@ -12,10 +12,10 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField "String", 'BASE_URL', '"http://192.168.0.13:3001"'
+            buildConfigField "String", 'BASE_URL', '"http://api.brittle-pins.com"'
         }
         release {
-            buildConfigField "String", 'BASE_URL', '"https://make-sense-api.herokuapp.com"'
+            buildConfigField "String", 'BASE_URL', '"http://api.brittle-pins.com"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

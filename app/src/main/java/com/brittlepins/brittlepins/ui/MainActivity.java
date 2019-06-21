@@ -1,13 +1,13 @@
-package com.example.brittlepins.ui;
+package com.brittlepins.brittlepins.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
-import com.example.brittlepins.R;
-import com.example.brittlepins.helpers.ActivityWithMenu;
-import com.example.brittlepins.helpers.AuthServices;
+import com.brittlepins.brittlepins.R;
+import com.brittlepins.brittlepins.helpers.ActivityWithMenu;
+import com.brittlepins.brittlepins.helpers.AuthServices;
 
 public class MainActivity extends ActivityWithMenu {
     public static SharedPreferences sharedPreferences;

@@ -1,4 +1,4 @@
-package com.example.brittlepins.ui;
+package com.brittlepins.brittlepins.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,11 +8,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.brittlepins.R;
-import com.example.brittlepins.api.model.Login;
-import com.example.brittlepins.api.model.Signup;
-import com.example.brittlepins.api.model.User;
-import com.example.brittlepins.helpers.AuthServices;
+import com.brittlepins.brittlepins.R;
+import com.brittlepins.brittlepins.api.model.Login;
+import com.brittlepins.brittlepins.api.model.Signup;
+import com.brittlepins.brittlepins.api.model.User;
+import com.brittlepins.brittlepins.helpers.AuthServices;
 
 import retrofit2.Call;
 import retrofit2.Callback;

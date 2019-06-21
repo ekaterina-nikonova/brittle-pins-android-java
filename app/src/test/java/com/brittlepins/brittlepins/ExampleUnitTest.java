@@ -1,4 +1,4 @@
-package com.example.brittlepins;
+package com.brittlepins.brittlepins;
 
 import org.junit.Test;
 

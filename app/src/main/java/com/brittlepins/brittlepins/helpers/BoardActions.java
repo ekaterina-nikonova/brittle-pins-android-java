@@ -1,11 +1,11 @@
-package com.example.brittlepins.helpers;
+package com.brittlepins.brittlepins.helpers;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.brittlepins.ui.MainActivity;
+import com.brittlepins.brittlepins.ui.MainActivity;
 import com.google.gson.JsonParseException;
 
 import java.text.SimpleDateFormat;

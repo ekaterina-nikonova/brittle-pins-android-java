@@ -1,4 +1,4 @@
-package com.example.brittlepins.helpers;
+package com.brittlepins.brittlepins.helpers;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,12 +6,12 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.brittlepins.BuildConfig;
-import com.example.brittlepins.api.model.Login;
-import com.example.brittlepins.api.model.User;
-import com.example.brittlepins.api.service.UserClient;
-import com.example.brittlepins.ui.LoginActivity;
-import com.example.brittlepins.ui.MainActivity;
+import com.brittlepins.brittlepins.BuildConfig;
+import com.brittlepins.brittlepins.api.model.Login;
+import com.brittlepins.brittlepins.api.model.User;
+import com.brittlepins.brittlepins.api.service.UserClient;
+import com.brittlepins.brittlepins.ui.LoginActivity;
+import com.brittlepins.brittlepins.ui.MainActivity;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
@@ -45,6 +45,7 @@ public class AuthServices {
     }
 
     public static void logIn(Activity a, Login login) {
+        resetApp();
         final Activity activity = a;
         Call<User> call = AuthServices.userClient.login(login);
 
