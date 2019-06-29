@@ -17,7 +17,7 @@ public class ComponentsActivity extends AppCompatActivity {
     }
 
     public void addComponent(View view) {
-        Intent intent = new Intent(this, NewComponentActivity.class);
+        Intent intent = new Intent(this, AddComponentActivity.class);
         startActivity(intent);
     }
 }

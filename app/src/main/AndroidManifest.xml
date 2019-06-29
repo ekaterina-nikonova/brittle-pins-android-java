@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.NewComponentActivity"></activity>
+        <activity android:name=".ui.AddComponentActivity"></activity>
         <activity android:name=".ui.ProjectsActivity" />
         <activity android:name=".ui.ComponentsActivity" />
         <activity android:name=".ui.BoardsActivity" />
