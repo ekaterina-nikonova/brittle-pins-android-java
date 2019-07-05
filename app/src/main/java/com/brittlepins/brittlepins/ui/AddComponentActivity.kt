@@ -1,9 +1,12 @@
 package com.brittlepins.brittlepins.ui
 
+import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Matrix
+import android.graphics.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
@@ -13,7 +16,6 @@ import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.brittlepins.brittlepins.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
 import com.google.firebase.ml.common.modeldownload.FirebaseRemoteModel
@@ -21,6 +23,8 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceAutoMLImageLabelerOptions
+import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetector
+import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 
 private const val CAMERA_PERMISSION_REQUEST_CODE = 10
 private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
@@ -64,14 +68,14 @@ class AddComponentActivity : AppCompatActivity() {
                 .setInitialDownloadConditions(conditions)
                 .setUpdatesDownloadConditions(conditions)
                 .build()
-        FirebaseModelManager.getInstance().registerRemoteModel(remoteModel);
+        FirebaseModelManager.getInstance().registerRemoteModel(remoteModel)
     }
 
     private fun startCamera() {
         val previewConfig = PreviewConfig.Builder().apply {
             //
         }.build()
-        val preview = Preview(previewConfig);
+        val preview = Preview(previewConfig)
         preview.setOnPreviewOutputUpdateListener {
             val parent = viewFinder.parent as ViewGroup
 
@@ -82,36 +86,14 @@ class AddComponentActivity : AppCompatActivity() {
             updateTransform()
         }
 
-        val imageCaptureConfig = ImageCaptureConfig.Builder().apply { setCaptureMode(ImageCapture.CaptureMode.MIN_LATENCY) }.build()
-        val imageCapture = ImageCapture(imageCaptureConfig)
+        val analyzerConfig = ImageAnalysisConfig.Builder().apply {
+            val analyzerThread = HandlerThread("ObjectDetection").apply { start() }
+            setCallbackHandler(Handler(analyzerThread.looper))
+            setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+        }.build()
+        val analyzerUseCase = ImageAnalysis(analyzerConfig).apply { analyzer = ImageAnalyzer(applicationContext) }
 
-        findViewById<FloatingActionButton>(R.id.takePhotoFAB).setOnClickListener {
-            imageCapture.takePicture(object : ImageCapture.OnImageCapturedListener() {
-                override fun onError(useCaseError: ImageCapture.UseCaseError?, message: String?, cause: Throwable?) {
-                    Log.e(TAG, "Could not capture picture")
-                }
-
-                override fun onCaptureSuccess(image: ImageProxy?, rotationDegrees: Int) {
-                    analyzeImage(image)
-                }
-            })
-        }
-        CameraX.bindToLifecycle(this, imageCapture, preview)
-    }
-
-    private fun analyzeImage(imageProxy: ImageProxy?) {
-        Log.d(TAG, "Image saved and is being analyzed...")
-        val img = imageProxy?.image ?: return
-        val firebaseImg = FirebaseVisionImage.fromMediaImage(img, FirebaseVisionImageMetadata.ROTATION_0)
-        val labelerOptions = FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
-                .setRemoteModelName("components")
-                .setConfidenceThreshold(0f)
-                .build()
-        val labeler = FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(labelerOptions)
-        labeler.processImage(firebaseImg)
-                .addOnSuccessListener { labels -> Log.d(TAG, labels[0].text + ": " + labels[0].confidence) }
-                .addOnFailureListener {e -> Log.e(TAG, "Could not label image: " + e.message) }
-        imageProxy.close()
+        CameraX.bindToLifecycle(this, analyzerUseCase, preview)
     }
 
     private fun updateTransform() {
@@ -133,5 +115,62 @@ class AddComponentActivity : AppCompatActivity() {
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private class ImageAnalyzer(context: Context) : ImageAnalysis.Analyzer {
+        private val TAG = "ImageAnalyzer"
+        private var done = false
+        private val ctx = context
+
+        val objectDetectionOptions: FirebaseVisionObjectDetectorOptions = FirebaseVisionObjectDetectorOptions.Builder()
+                .setDetectorMode(FirebaseVisionObjectDetectorOptions.STREAM_MODE)
+                .build()
+        val objectDetector: FirebaseVisionObjectDetector = FirebaseVision.getInstance().getOnDeviceObjectDetector(objectDetectionOptions)
+
+        override fun analyze(imageProxy: ImageProxy, rotationDegrees: Int) {
+            if (!done) {
+                val image = imageProxy.image ?: return
+                val visionImage = FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+
+                objectDetector.processImage(visionImage)
+                        .addOnSuccessListener { detectedObjects ->
+                            if (detectedObjects.size > 0) {
+                                done = true
+                                for (obj in detectedObjects) {
+                                    labelImage(visionImage)
+                                    Log.d(TAG, "${obj.entityId} - ${obj.boundingBox.flattenToString()}")
+                                }
+                                imageProxy.close()
+                            }
+                        }
+                        .addOnFailureListener { e -> Log.e(TAG, "Could not detect object: ${e.message}") }
+            }
+        }
+
+        private fun labelImage(image: FirebaseVisionImage) {
+            val labelerOptions = FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
+                    .setRemoteModelName("components")
+                    .setConfidenceThreshold(0f)
+                    .build()
+            val labeler = FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(labelerOptions)
+
+            labeler.processImage(FirebaseVisionImage.fromBitmap(image.bitmap))
+                    .addOnSuccessListener { labels ->
+                        if (labels.size > 0 && labels[0].confidence >= 0.7f) {
+                            showNewComponentPrompt(labels[0].text)
+                        } else {
+                            done = false
+                        }
+                    }
+                    .addOnFailureListener {
+                        e -> Log.e(TAG, "Could not label image: ${e.message}")
+                        done = false
+                    }
+        }
+
+        private fun showNewComponentPrompt(label: String) {
+            done = true
+            Toast.makeText(ctx, label, Toast.LENGTH_LONG).show()
+        }
     }
 }

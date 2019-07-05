@@ -45,6 +45,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.google.firebase:firebase-ml-vision:21.0.0'
     implementation 'com.google.firebase:firebase-ml-vision-automl:17.0.0'
+    implementation 'com.google.firebase:firebase-ml-vision-object-detection-model:17.0.0'
 
     implementation "androidx.camera:camera-core:${camerax_version}"
     implementation "androidx.camera:camera-camera2:${camerax_version}"
