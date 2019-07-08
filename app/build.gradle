@@ -12,10 +12,10 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField "String", 'BASE_URL', '"http://api.brittle-pins.com"'
+            buildConfigField "String", 'BASE_URL', '"https://api.brittle-pins.com"'
         }
         release {
-            buildConfigField "String", 'BASE_URL', '"http://api.brittle-pins.com"'
+            buildConfigField "String", 'BASE_URL', '"https://api.brittle-pins.com"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

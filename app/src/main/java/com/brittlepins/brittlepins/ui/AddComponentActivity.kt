@@ -10,12 +10,16 @@ import android.os.HandlerThread
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.brittlepins.brittlepins.R
+import com.brittlepins.brittlepins.helpers.GraphicOverlay
+import com.brittlepins.brittlepins.helpers.ObjectConfirmationController
+import com.brittlepins.brittlepins.helpers.ObjectGraphicInProminentMode
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
 import com.google.firebase.ml.common.modeldownload.FirebaseRemoteModel
@@ -23,6 +27,7 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceAutoMLImageLabelerOptions
+import com.google.firebase.ml.vision.objects.FirebaseVisionObject
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetector
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 
@@ -31,13 +36,19 @@ private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
 
 class AddComponentActivity : AppCompatActivity() {
     private val TAG = "AddComponentActivity"
+
+    private lateinit var graphicOverlay: GraphicOverlay
+    private lateinit var preview: Preview
     private lateinit var viewFinder: TextureView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_component)
 
+        graphicOverlay = findViewById(R.id.graphicOverlay)
         viewFinder = findViewById(R.id.view_finder)
+
+        graphicOverlay.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
 
         configureModel()
 
@@ -75,7 +86,7 @@ class AddComponentActivity : AppCompatActivity() {
         val previewConfig = PreviewConfig.Builder().apply {
             //
         }.build()
-        val preview = Preview(previewConfig)
+        preview = Preview(previewConfig)
         preview.setOnPreviewOutputUpdateListener {
             val parent = viewFinder.parent as ViewGroup
 
@@ -91,7 +102,7 @@ class AddComponentActivity : AppCompatActivity() {
             setCallbackHandler(Handler(analyzerThread.looper))
             setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         }.build()
-        val analyzerUseCase = ImageAnalysis(analyzerConfig).apply { analyzer = ImageAnalyzer(applicationContext) }
+        val analyzerUseCase = ImageAnalysis(analyzerConfig).apply { analyzer = ImageAnalyzer(applicationContext, graphicOverlay, preview) }
 
         CameraX.bindToLifecycle(this, analyzerUseCase, preview)
     }
@@ -117,10 +128,13 @@ class AddComponentActivity : AppCompatActivity() {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    private class ImageAnalyzer(context: Context) : ImageAnalysis.Analyzer {
+    private class ImageAnalyzer(
+            private val ctx: Context,
+            private val overlay: GraphicOverlay,
+            private val preview: Preview
+    ) : ImageAnalysis.Analyzer {
         private val TAG = "ImageAnalyzer"
         private var done = false
-        private val ctx = context
 
         val objectDetectionOptions: FirebaseVisionObjectDetectorOptions = FirebaseVisionObjectDetectorOptions.Builder()
                 .setDetectorMode(FirebaseVisionObjectDetectorOptions.STREAM_MODE)
@@ -136,8 +150,9 @@ class AddComponentActivity : AppCompatActivity() {
                         .addOnSuccessListener { detectedObjects ->
                             if (detectedObjects.size > 0) {
                                 done = true
+                                showObjectBox(detectedObjects[0])
                                 for (obj in detectedObjects) {
-                                    labelImage(visionImage)
+                                    labelImage(visionImage, obj.boundingBox)
                                     Log.d(TAG, "${obj.entityId} - ${obj.boundingBox.flattenToString()}")
                                 }
                                 imageProxy.close()
@@ -147,7 +162,7 @@ class AddComponentActivity : AppCompatActivity() {
             }
         }
 
-        private fun labelImage(image: FirebaseVisionImage) {
+        private fun labelImage(image: FirebaseVisionImage, boundingBox: Rect) {
             val labelerOptions = FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
                     .setRemoteModelName("components")
                     .setConfidenceThreshold(0f)
@@ -157,7 +172,20 @@ class AddComponentActivity : AppCompatActivity() {
             labeler.processImage(FirebaseVisionImage.fromBitmap(image.bitmap))
                     .addOnSuccessListener { labels ->
                         if (labels.size > 0 && labels[0].confidence >= 0.7f) {
-                            showNewComponentPrompt(labels[0].text)
+                            preview.focus(boundingBox, boundingBox, object: OnFocusListener {
+                                override fun onFocusLocked(afRect: Rect?) {
+                                    CameraX.unbind(preview)
+                                    showNewComponentPrompt(labels[0].text)
+                                }
+
+                                override fun onFocusUnableToLock(afRect: Rect?) {
+                                    return
+                                }
+
+                                override fun onFocusTimedOut(afRect: Rect?) {
+                                    return
+                                }
+                            })
                         } else {
                             done = false
                         }
@@ -171,6 +199,11 @@ class AddComponentActivity : AppCompatActivity() {
         private fun showNewComponentPrompt(label: String) {
             done = true
             Toast.makeText(ctx, label, Toast.LENGTH_LONG).show()
+        }
+
+        private fun showObjectBox(obj: FirebaseVisionObject) {
+            overlay.clear()
+            overlay.add(ObjectGraphicInProminentMode(overlay, obj, ObjectConfirmationController(overlay)))
         }
     }
 }
