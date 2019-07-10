@@ -1,5 +1,6 @@
 package com.brittlepins.brittlepins.ui
 
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.*
@@ -9,6 +10,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import android.util.SparseIntArray
 import android.view.Surface
 import android.view.TextureView
 import android.view.View
@@ -37,6 +39,7 @@ private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
 
 class AddComponentActivity : AppCompatActivity() {
     private val TAG = "AddComponentActivity"
+    private val activity: Activity = this
 
     private lateinit var graphicOverlay: GraphicOverlay
     private lateinit var preview: Preview
@@ -105,7 +108,7 @@ class AddComponentActivity : AppCompatActivity() {
             setCallbackHandler(Handler(analyzerThread.looper))
             setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         }.build()
-        val analyzerUseCase = ImageAnalysis(analyzerConfig).apply { analyzer = ImageAnalyzer(applicationContext, graphicOverlay, preview, viewFinder) }
+        val analyzerUseCase = ImageAnalysis(analyzerConfig).apply { analyzer = ImageAnalyzer(activity, applicationContext, graphicOverlay, preview, viewFinder) }
 
         CameraX.bindToLifecycle(this, analyzerUseCase, preview)
     }
@@ -132,6 +135,7 @@ class AddComponentActivity : AppCompatActivity() {
     }
 
     private class ImageAnalyzer(
+            private val activity: Activity,
             private val ctx: Context,
             private val overlay: GraphicOverlay,
             private val preview: Preview,
@@ -146,9 +150,15 @@ class AddComponentActivity : AppCompatActivity() {
         val objectDetector: FirebaseVisionObjectDetector = FirebaseVision.getInstance().getOnDeviceObjectDetector(objectDetectionOptions)
 
         override fun analyze(imageProxy: ImageProxy, rotationDegrees: Int) {
+            val COMPENSATED_ROTATION = SparseIntArray().apply {
+                append(Surface.ROTATION_0, FirebaseVisionImageMetadata.ROTATION_90)
+                append(Surface.ROTATION_90, FirebaseVisionImageMetadata.ROTATION_0)
+                append(Surface.ROTATION_180, FirebaseVisionImageMetadata.ROTATION_270)
+                append(Surface.ROTATION_270, FirebaseVisionImageMetadata.ROTATION_180)
+            }
             if (!done) {
                 val image = imageProxy.image ?: return
-                val visionImage = FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
+                val visionImage = FirebaseVisionImage.fromMediaImage(image, COMPENSATED_ROTATION[activity.windowManager.defaultDisplay.rotation])
 
                 Thread(Runnable {
                     objectDetector.processImage(visionImage)

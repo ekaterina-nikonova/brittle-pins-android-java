@@ -121,10 +121,10 @@ internal class ObjectGraphicInProminentMode(
         val coeffY = viewFinder.height.toFloat() / image.bitmap.height
         val coeffX = viewFinder.width.toFloat() / image.bitmap.width
 
-        val left = box.left * coeffX
-        val top = box.top * coeffY
-        val right = left + box.width() * coeffX
-        val bottom = top + box.height() * coeffY
+        val left = box.left * coeffX - 20
+        val top = box.top * coeffY - 20
+        val right = left + box.width() * coeffX + 20
+        val bottom = top + box.height() * coeffY + 20
 
         val scaledBox = RectF(left, top, right, bottom)
         return scaledBox
