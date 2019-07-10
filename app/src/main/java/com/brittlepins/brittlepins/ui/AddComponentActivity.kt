@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -50,14 +51,16 @@ class AddComponentActivity : AppCompatActivity() {
 
         graphicOverlay.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
 
-        configureModel()
-
         if (allPermissionsGranted()) {
             viewFinder.post { startCamera() }
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, CAMERA_PERMISSION_REQUEST_CODE)
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        configureModel()
         viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateTransform() }
     }
 
@@ -102,7 +105,7 @@ class AddComponentActivity : AppCompatActivity() {
             setCallbackHandler(Handler(analyzerThread.looper))
             setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         }.build()
-        val analyzerUseCase = ImageAnalysis(analyzerConfig).apply { analyzer = ImageAnalyzer(applicationContext, graphicOverlay, preview) }
+        val analyzerUseCase = ImageAnalysis(analyzerConfig).apply { analyzer = ImageAnalyzer(applicationContext, graphicOverlay, preview, viewFinder) }
 
         CameraX.bindToLifecycle(this, analyzerUseCase, preview)
     }
@@ -131,7 +134,8 @@ class AddComponentActivity : AppCompatActivity() {
     private class ImageAnalyzer(
             private val ctx: Context,
             private val overlay: GraphicOverlay,
-            private val preview: Preview
+            private val preview: Preview,
+            private val viewFinder: TextureView
     ) : ImageAnalysis.Analyzer {
         private val TAG = "ImageAnalyzer"
         private var done = false
@@ -146,19 +150,24 @@ class AddComponentActivity : AppCompatActivity() {
                 val image = imageProxy.image ?: return
                 val visionImage = FirebaseVisionImage.fromMediaImage(image, FirebaseVisionImageMetadata.ROTATION_0)
 
-                objectDetector.processImage(visionImage)
-                        .addOnSuccessListener { detectedObjects ->
-                            if (detectedObjects.size > 0) {
-                                done = true
-                                showObjectBox(detectedObjects[0])
-                                for (obj in detectedObjects) {
-                                    labelImage(visionImage, obj.boundingBox)
-                                    Log.d(TAG, "${obj.entityId} - ${obj.boundingBox.flattenToString()}")
+                Thread(Runnable {
+                    objectDetector.processImage(visionImage)
+                            .addOnSuccessListener { detectedObjects ->
+                                if (detectedObjects.size > 0) {
+                                    showObjectBox(detectedObjects[0], visionImage)
+                                    for (obj in detectedObjects) {
+                                        labelImage(visionImage, obj.boundingBox)
+                                        Log.d(TAG, "${obj.entityId} - ${obj.boundingBox.flattenToString()}")
+                                    }
+                                    imageProxy.close()
                                 }
-                                imageProxy.close()
                             }
-                        }
-                        .addOnFailureListener { e -> Log.e(TAG, "Could not detect object: ${e.message}") }
+                            .addOnFailureListener { e ->
+                                Log.e(TAG, "Could not detect object: ${e.message}")
+                                analyze(imageProxy, rotationDegrees)
+                            }
+                }).start()
+
             }
         }
 
@@ -169,31 +178,30 @@ class AddComponentActivity : AppCompatActivity() {
                     .build()
             val labeler = FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(labelerOptions)
 
-            labeler.processImage(FirebaseVisionImage.fromBitmap(image.bitmap))
-                    .addOnSuccessListener { labels ->
-                        if (labels.size > 0 && labels[0].confidence >= 0.7f) {
-                            preview.focus(boundingBox, boundingBox, object: OnFocusListener {
-                                override fun onFocusLocked(afRect: Rect?) {
-                                    CameraX.unbind(preview)
-                                    showNewComponentPrompt(labels[0].text)
+            Thread(Runnable {
+                labeler.processImage(FirebaseVisionImage.fromBitmap(image.bitmap))
+                        .addOnSuccessListener { labels ->
+                            if (labels.size > 0 && labels[0].confidence >= 0.7f) {
+                                val timer = object: CountDownTimer(1500, 1) {
+                                    override fun onTick(millisUntilFinished: Long) {}
+                                    override fun onFinish() {
+                                        done = true
+                                        CameraX.unbind(preview)
+                                        showNewComponentPrompt(labels[0].text)
+                                    }
                                 }
-
-                                override fun onFocusUnableToLock(afRect: Rect?) {
-                                    return
-                                }
-
-                                override fun onFocusTimedOut(afRect: Rect?) {
-                                    return
-                                }
-                            })
-                        } else {
-                            done = false
+                                timer.start()
+                            } else {
+                                done = false
+                            }
                         }
-                    }
-                    .addOnFailureListener {
-                        e -> Log.e(TAG, "Could not label image: ${e.message}")
-                        done = false
-                    }
+                        .addOnFailureListener {
+                            e -> Log.e(TAG, "Could not label image: ${e.message}")
+                            done = false
+                            labelImage(image, boundingBox)
+                        }
+            }).start()
+
         }
 
         private fun showNewComponentPrompt(label: String) {
@@ -201,9 +209,9 @@ class AddComponentActivity : AppCompatActivity() {
             Toast.makeText(ctx, label, Toast.LENGTH_LONG).show()
         }
 
-        private fun showObjectBox(obj: FirebaseVisionObject) {
+        private fun showObjectBox(obj: FirebaseVisionObject, img: FirebaseVisionImage) {
             overlay.clear()
-            overlay.add(ObjectGraphicInProminentMode(overlay, obj, ObjectConfirmationController(overlay)))
+            overlay.add(ObjectGraphicInProminentMode(overlay, obj, ObjectConfirmationController(overlay), viewFinder, img))
         }
     }
 }

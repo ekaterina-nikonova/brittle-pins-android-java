@@ -16,17 +16,14 @@
 
 package com.brittlepins.brittlepins.helpers
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.LinearGradient
-import android.graphics.Paint
+import android.graphics.*
 import android.graphics.Paint.Style
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
 import android.graphics.Shader.TileMode
+import android.view.TextureView
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import com.brittlepins.brittlepins.R
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.objects.FirebaseVisionObject
 
 /**
@@ -35,7 +32,9 @@ import com.google.firebase.ml.vision.objects.FirebaseVisionObject
 internal class ObjectGraphicInProminentMode(
     overlay: GraphicOverlay,
     private val visionObject: FirebaseVisionObject,
-    private val confirmationController: ObjectConfirmationController
+    private val confirmationController: ObjectConfirmationController,
+    private val viewFinder: TextureView,
+    private val image: FirebaseVisionImage
 ) : GraphicOverlay.Graphic(overlay) {
 
     private val scrimPaint: Paint = Paint()
@@ -100,7 +99,7 @@ internal class ObjectGraphicInProminentMode(
 
         // Draws the dark background scrim and leaves the visionObject area clear.
         canvas.drawRect(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat(), scrimPaint)
-        canvas.drawRoundRect(rect, boxCornerRadius.toFloat(), boxCornerRadius.toFloat(), eraserPaint)
+        canvas.drawRoundRect(scaledBox(rect), boxCornerRadius.toFloat(), boxCornerRadius.toFloat(), eraserPaint)
 
         // Draws the bounding box with a gradient border color at vertical.
         boxPaint.shader = if (confirmationController.isConfirmed) {
@@ -115,6 +114,19 @@ internal class ObjectGraphicInProminentMode(
                     boxGradientEndColor,
                     TileMode.CLAMP)
         }
-        canvas.drawRoundRect(rect, boxCornerRadius.toFloat(), boxCornerRadius.toFloat(), boxPaint)
+        canvas.drawRoundRect(scaledBox(rect), boxCornerRadius.toFloat(), boxCornerRadius.toFloat(), boxPaint)
+    }
+
+    private fun scaledBox(box: RectF) : RectF {
+        val coeffY = viewFinder.height.toFloat() / image.bitmap.height
+        val coeffX = viewFinder.width.toFloat() / image.bitmap.width
+
+        val left = box.left * coeffX
+        val top = box.top * coeffY
+        val right = left + box.width() * coeffX
+        val bottom = top + box.height() * coeffY
+
+        val scaledBox = RectF(left, top, right, bottom)
+        return scaledBox
     }
 }
